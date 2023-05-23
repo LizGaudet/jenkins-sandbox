@@ -26,12 +26,22 @@ pipeline {
     stages {
         stage('Requirements') {
             steps {
-                echo 'Installing requirements...'
+                // this step is required to make sure the script
+                // can be executed directly in a shell
+                sh('chmod +x ./algorithm.sh')
             }
         }
         stage('Build') {
             steps {
                 echo 'Building..'
+                // the algorithm script creates a file named report.txt
+                sh('./algorithm.sh')
+
+                // this step archives the report
+                archiveArtifacts allowEmptyArchive: true,
+                    artifacts: '*.txt',
+                    fingerprint: true,
+                    onlyIfSuccessful: true
             }
         }
         stage('Test') {
@@ -59,3 +69,6 @@ pipeline {
         }
     }
 }
+
+
+
